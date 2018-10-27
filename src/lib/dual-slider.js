@@ -9,15 +9,10 @@ export default class DualSlider extends React.Component {
     super(props)
     this.oldX = 0
     this.startX = 0
-    // this.clientX = 0
 
     const values = props.values.slice().sort(sortValues)
 
     const size = Math.abs(props.max - props.min)
-
-    for (let i = 0; i < 100; i += 10) {
-      console.log(i / size * 100)
-    }
 
     values[0] = this.getMinValue(values[0], props.min, props.max)
     values[1] = this.getMaxValue(values[1], props.max, props.min)
@@ -45,8 +40,6 @@ export default class DualSlider extends React.Component {
       selectedHandle: 0,
       startValue: 0,
       currentValue: 0,
-      // startX: 0,
-      // currentX: 0,
       boxWidth: 0,
       rangeLeft: range[0] + '%',
       rangeRight: range[1] + '%',
@@ -57,7 +50,6 @@ export default class DualSlider extends React.Component {
       selectedRange: []
     }
 
-    // this.state = this.getStateFromProps(props)
     this.onMouseDown = this.onMouseDown.bind(this)
     this.onTouchStart = this.onTouchStart.bind(this)
     this.onSliderClick = this.onSliderClick.bind(this)
@@ -65,7 +57,8 @@ export default class DualSlider extends React.Component {
     this.onMouseLeave = this.onMouseLeave.bind(this)
     this.onMouseUp = this.onMouseUp.bind(this)
     this.onTouchMove = this.onTouchMove.bind(this)
-    // this.onTouchEnd = this.onTouchEnd.bind(this)
+    this.quickLink = this.quickLink.bind(this)
+    this.onTouchEnd = this.onTouchEnd.bind(this)
   }
 
   getMinValue (val, min, max) {
@@ -124,7 +117,6 @@ export default class DualSlider extends React.Component {
 
     this.setState({
       values,
-      // currentX: cursorX,
       currentValue: this.getCurrentValue(cursorX, this.state.boxWidth),
       rangeLeft: range[0] + '%',
       rangeRight: range[1] + '%',
@@ -134,7 +126,6 @@ export default class DualSlider extends React.Component {
   }
 
   beginDrag (event, index) {
-  //  this.clientX = event.touches && event.touches.length > 0 ? event.touches[0].clientX : event.clientX
     this.startX = event.touches && event.touches.length > 0 ? event.touches[0].clientX : event.clientX
     this.setState({
       selectionDown: true,
@@ -156,9 +147,9 @@ export default class DualSlider extends React.Component {
     this.dragging(event)
   }
 
-  // onTouchEnd (event) {
-  //   this.beginDrag(event)
-  // }
+  onTouchEnd (event, index) {
+    this.beginDrag(event, index)
+  }
 
   onTouchStart (event, index) {
     this.beginDrag(event, index)
@@ -194,16 +185,7 @@ export default class DualSlider extends React.Component {
       let handleTwoZ = 1
       const tip0Display = this.state.selectedHandle === 0 ? 'block' : 'none'
       const tip1Display = this.state.selectedHandle === 1 ? 'block' : 'none'
-      if (this.state.selectedHandle === 0 && handleOnePos >= handleTwoPos) {
-        tt = values[1]
-        handleOneZ = 5
-      } else if (this.state.selectedHandle === 1 && handleOnePos >= handleTwoPos) {
-        tt = values[0]
-        handleTwoZ = 5
-      } else {
-        tt = values[this.state.selectedHandle]
-      }
-
+      tt = values[this.state.selectedHandle]
       this.setState({
         currentX: clientX,
         currentValue: this.getCurrentValue(clientX, this.state.boxWidth),
@@ -268,8 +250,38 @@ export default class DualSlider extends React.Component {
     return [offsetVals[0] / size * 100, offsetVals[1] / size * 100]
   }
 
-  onChange () {
+  quickLink (ql) {
+    console.log('hi', ql)
 
+    const values = ql.values.sort(sortValues)
+
+    const size = Math.abs(this.props.max - this.props.min)
+
+    values[0] = this.getMinValue(values[0], this.props.min, this.props.max)
+    values[1] = this.getMaxValue(values[1], this.props.max, this.props.min)
+
+    const offsetVals = [values[0] - this.props.min, values[1] - this.props.min]
+    const positions = [offsetVals[0] / size * 100, offsetVals[1] / size * 100]
+
+    const range = positions.slice().sort(sortValues)
+    range[1] = 100 - range[1]
+
+    let handleOnePos = positions[0]
+    let handleTwoPos = positions[1]
+    if (Math.round(positions[0] - 1) >= Math.round(positions[1])) {
+      handleOnePos = positions[1]
+    }
+    if (Math.round(positions[1]) <= Math.round(positions[0])) {
+      handleTwoPos = positions[0]
+    }
+
+    this.setState({
+      values,
+      rangeLeft: range[0] + '%',
+      rangeRight: range[1] + '%',
+      handleOnePos: handleOnePos + '%',
+      handleTwoPos: handleTwoPos + '%'
+    })
   }
 
   render () {
@@ -290,7 +302,7 @@ export default class DualSlider extends React.Component {
     }
 
     const tooltip0 = {
-      marginTop: '-10px',
+      marginTop: '-15px',
       marginLeft: '-5px',
       display: this.state.tip0Display,
       left: this.state.handleOnePos,
@@ -298,18 +310,13 @@ export default class DualSlider extends React.Component {
     }
 
     const tooltip1 = {
-      marginTop: '-10px',
+      marginTop: '-15px',
       marginLeft: '-5px',
       display: this.state.tip1Display,
       left: this.state.handleTwoPos,
       position: 'absolute'
     }
-    /*
-    offsetVals[0] / size * 100
-   {this.props.showMarks && <div className='slider-scale'>
-                for(let i<0)
-                </div>}
-*/
+
     return (
       <div className='container'
         onMouseMove={this.onMouseMove}
@@ -320,7 +327,7 @@ export default class DualSlider extends React.Component {
 
         <div className='sliders'>
           <div className='track' onClick={this.onSliderClick}><div className='range' style={trackStyle} /></div>
-          <div style={tooltip0}><span>{this.state.tipText}</span></div>
+          <div className='tip' style={tooltip0}><span>{this.state.tipText}</span></div>
           <div
             className='handle'
             style={handle0}
@@ -329,12 +336,7 @@ export default class DualSlider extends React.Component {
           >
             <div />
           </div>
-          {/* {this.props.showMarks && <div className='slider-scale'>
-          for (let i = 0; i < 100; i += 10) {
-            <div className='marker'>
-    }
-                </div>} */}
-          <div style={tooltip1}><span>{this.state.tipText}</span></div>
+          <div className='tip' style={tooltip1}><span>{this.state.tipText}</span></div>
 
           <div
             className='handle'
@@ -345,18 +347,23 @@ export default class DualSlider extends React.Component {
             <div />
           </div>
         </div>
+        <div style={{display: 'flex', justifyContent: 'space-evenly'}}>
+          {this.props.quickLinks.map((ql, index) => {
+            return (<span className='quick-link' key={`ql_${index}`} onClick={() => { this.quickLink(ql) }}>{ql.name}</span>)
+          })}
+        </div>
       </div>
     )
   }
 }
 
 DualSlider.propTypes = {
-  limits: PropTypes.arrayOf(PropTypes.number),
   max: PropTypes.number,
   min: PropTypes.number,
   onChange: PropTypes.func,
   rangeColor: PropTypes.string,
-  values: PropTypes.arrayOf(PropTypes.number)
+  values: PropTypes.arrayOf(PropTypes.number),
+  quickLinks: PropTypes.array
 
 }
 
@@ -365,5 +372,6 @@ DualSlider.defaultProps = {
   max: 100,
   values: [0, 100],
   onChange: function () {},
-  trackRangeColor: '#39ff14'
+  trackRangeColor: '#39ff14',
+  quickLinks: []
 }

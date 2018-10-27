@@ -1,13 +1,8 @@
-
-/* .container, .container div {
-  user-drag: none; 
-  user-select: none;
-  -moz-user-select: none;
-  -webkit-user-drag: none;
-  -webkit-user-select: none;
-  -ms-user-select: none;
+  body {
+    font-family: '"Roboto", "Helvetica", "Arial", sans-serif';
+    font-weight: 400;
+    line-height: '1.5em';
   }
-   */
   .container {
     display: flex;
     flex-direction: column;
@@ -21,7 +16,6 @@
     margin-left:20px;
     margin-right:20px;
   }
-  
   .track,
   .range {
     display: block;
@@ -68,3 +62,15 @@
       box-shadow: 1px 1px 5px #666;
       border-radius: 50%;
   }
+  .quick-link {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+  .quick-link:hover {
+    text-decoration: none;
+}
+.tip {
+  margin-top: '-15px';
+  margin-left: '-5px';
+  position: 'absolute';
+}
