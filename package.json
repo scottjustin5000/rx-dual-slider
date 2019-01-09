@@ -11,8 +11,7 @@
     "classnames": "^2.2.6",
     "numeral": "^2.0.6",
     "react": "^16.6.3",
-    "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1"
+    "react-dom": "^16.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -22,12 +21,12 @@
     "deploy": "npm run build && aws s3 sync build/ s3://dual-slider --acl public-read"
   },
   "devDependencies": {
+    "@babel/cli": "^7.0.0",
     "@babel/core": "^7.2.0",
     "@babel/runtime": "^7.2.0",
-    "@babel/cli": "^7.0.0",
     "babel-core": "7.0.0-bridge.0",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-scripts": "2.1.1"
+    "react-scripts": "^2.1.3"
   }
 }
