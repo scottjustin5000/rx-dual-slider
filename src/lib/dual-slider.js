@@ -212,7 +212,7 @@ export default class DualSlider extends React.Component {
         tip0Display: 'none',
         tip1Display: 'none'
       })
-      this.onChange()
+      this.props.onChange()
     }
     event.stopPropagation()
   }
